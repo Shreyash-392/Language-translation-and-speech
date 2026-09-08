@@ -37,16 +37,17 @@ class IndicTrans2Translation(TranslationProvider):
 
         dtype = torch.float16 if (self.device == "cuda" and torch.cuda.is_available()) else torch.float32
 
-        # Check if model exists locally in cache
+        # Strategy: Try local cache first if OFFLINE_MODE is set, else fall back to online download
         model_path = self.model_name
-        local_only = settings.OFFLINE_MODE
+        loaded_successfully = False
 
+        # Attempt 1: Load based on settings.OFFLINE_MODE
         try:
             self.tokenizer = AutoTokenizer.from_pretrained(
                 model_path,
                 trust_remote_code=True,
                 token=token,
-                local_files_only=local_only,
+                local_files_only=settings.OFFLINE_MODE,
                 cache_dir=settings.MODEL_DIR
             )
             self.model = AutoModelForSeq2SeqLM.from_pretrained(
@@ -54,11 +55,37 @@ class IndicTrans2Translation(TranslationProvider):
                 trust_remote_code=True,
                 torch_dtype=dtype,
                 token=token,
-                local_files_only=local_only,
+                local_files_only=settings.OFFLINE_MODE,
                 cache_dir=settings.MODEL_DIR
             )
-        except Exception as e:
-            # Fallback to local_files_only if remote check fails (e.g. SSL/network issue)
+            loaded_successfully = True
+        except Exception:
+            pass
+
+        # Attempt 2: If attempt 1 failed (e.g. model not cached on cloud deployment), try downloading online
+        if not loaded_successfully:
+            try:
+                self.tokenizer = AutoTokenizer.from_pretrained(
+                    model_path,
+                    trust_remote_code=True,
+                    token=token,
+                    local_files_only=False,
+                    cache_dir=settings.MODEL_DIR
+                )
+                self.model = AutoModelForSeq2SeqLM.from_pretrained(
+                    model_path,
+                    trust_remote_code=True,
+                    torch_dtype=dtype,
+                    token=token,
+                    local_files_only=False,
+                    cache_dir=settings.MODEL_DIR
+                )
+                loaded_successfully = True
+            except Exception:
+                pass
+
+        # Attempt 3: Final attempt with local_files_only=True
+        if not loaded_successfully:
             self.tokenizer = AutoTokenizer.from_pretrained(
                 model_path,
                 trust_remote_code=True,
