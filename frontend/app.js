@@ -20,10 +20,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const ramUsage = document.getElementById('ramUsage');
     const gpuUsage = document.getElementById('gpuUsage');
 
-    // Dynamic API Base URL (uses relative path on port 8000, else connects to http://localhost:8000)
-    const API_BASE = (window.location.port === '8000') 
-        ? '' 
-        : 'http://localhost:8000';
+    // Dynamic API Base URL (uses relative path on web deployments, or localhost:8000 when running on dev servers)
+    const API_BASE = (window.location.hostname === 'localhost' && window.location.port !== '8000' && window.location.port !== '') 
+        ? 'http://localhost:8000' 
+        : '';
 
     let audioContext = null;
     let audioStream = null;
