@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Vernacular Pedagogy — Hindi to Santali Translation</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen">
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        
+        <!-- Header -->
+        <header class="border-b border-slate-800 pb-6 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+                <div class="flex items-center gap-3">
+                    <span class="bg-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">SIH Prototype</span>
+                    <span class="text-slate-400 text-xs font-medium" id="statusBadge"><i class="fas fa-circle text-emerald-500 text-[10px] mr-1"></i> System Online</span>
+                </div>
+                <h1 class="text-2xl md:text-3xl font-bold text-white mt-2">AI Vernacular Pedagogy & Real-Time Translation</h1>
+                <p class="text-slate-400 text-sm mt-1">Teacher Hindi Speech → IndicConformer ASR → IndicTrans2 → Santali (<span class="text-indigo-400 font-semibold">sat_Olck</span>) → Santali Speech</p>
+            </div>
+            <div class="bg-slate-800 border border-slate-700 px-4 py-2 rounded-xl text-xs text-slate-300">
+                <div><strong class="text-white">Target Language:</strong> Santali ( Ol Chiki )</div>
+                <div class="mt-0.5 text-slate-400">Offline Classroom Capable</div>
+            </div>
+        </header>
+
+        <!-- Main Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left Column: Audio Recording & Input -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <!-- Voice Input Card -->
+                <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-6 shadow-xl">
+                    <h2 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                        <i class="fas fa-microphone text-indigo-400"></i> Teacher Voice Input (Hindi)
+                    </h2>
+                    
+                    <!-- Recording Controls -->
+                    <div class="flex flex-col items-center justify-center p-6 border-2 border-dashed border-slate-700 rounded-xl bg-slate-900/50">
+                        <button id="recordBtn" class="w-20 h-20 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full flex items-center justify-center text-2xl shadow-lg hover:scale-105 transition-all duration-200">
+                            <i class="fas fa-microphone" id="recordIcon"></i>
+                        </button>
+                        <p id="recordStatus" class="text-slate-300 text-sm font-medium mt-4">Click to start recording Hindi speech</p>
+                        <div id="recordingTimer" class="hidden text-rose-400 text-xs font-semibold mt-1 flex items-center gap-1">
+                            <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span> Recording... <span id="timerVal">00:00</span>
+                        </div>
+                    </div>
+
+                    <!-- Upload Audio Option -->
+                    <div class="mt-4 pt-4 border-t border-slate-700/60">
+                        <label class="block text-xs font-semibold text-slate-400 mb-2">Or Upload Audio File (.wav, .mp3, .webm):</label>
+                        <input type="file" id="audioFileInput" accept="audio/*" class="block w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-950 file:text-indigo-300 hover:file:bg-indigo-900 border border-slate-700 rounded-lg cursor-pointer bg-slate-900/40">
+                    </div>
+                </div>
+
+                <!-- Text Input Card -->
+                <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-6 shadow-xl">
+                    <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+                        <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                            <i class="fas fa-keyboard text-emerald-400"></i> Direct Text Translation
+                        </h2>
+                        <select id="translationDirection" class="bg-slate-900 border border-slate-700 text-xs text-indigo-300 rounded-lg px-2.5 py-1 focus:outline-none focus:border-indigo-500 font-medium">
+                            <option value="hin_Deva->sat_Olck">Hindi → Santali (Ol Chiki)</option>
+                            <option value="sat_Olck->hin_Deva">Santali (Ol Chiki) → Hindi</option>
+                        </select>
+                    </div>
+                    <textarea id="textInput" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors" placeholder="Type text to translate (e.g., नमस्ते or ᱡᱚᱦᱟᱨ)..."></textarea>
+                    <button id="translateTextBtn" class="mt-3 w-full bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2">
+                        <i class="fas fa-language"></i> Translate Text
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Column: Outputs & Benchmarks -->
+            <div class="lg:col-span-7 space-y-6">
+                
+                <!-- Results Output Card -->
+                <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-6 shadow-xl">
+                    <h2 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                        <i class="fas fa-language text-purple-400"></i> Translation & Speech Output
+                    </h2>
+
+                    <!-- Recognized Hindi Text -->
+                    <div class="mb-4">
+                        <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Recognized Hindi Text (ASR Output)</label>
+                        <div id="hindiOutput" class="mt-1 bg-slate-900/90 border border-slate-700 rounded-xl p-4 text-base text-white min-h-[3rem] flex items-center">
+                            <span class="text-slate-500 italic">Recognized text will appear here...</span>
+                        </div>
+                    </div>
+
+                    <!-- Translated Santali Text -->
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Santali Translation (<span class="text-indigo-400">sat_Olck</span> script)</label>
+                            <span class="text-[11px] bg-slate-700 text-slate-300 px-2 py-0.5 rounded">IndicTrans2-320M</span>
+                        </div>
+                        <div id="santaliOutput" class="mt-1 bg-indigo-950/40 border border-indigo-800/50 rounded-xl p-4 text-lg font-medium text-indigo-200 min-h-[3.5rem] flex items-center">
+                            <span class="text-slate-500 italic text-base">Santali translated text will appear here...</span>
+                        </div>
+                    </div>
+
+                    <!-- Santali Audio Player -->
+                    <div class="pt-4 border-t border-slate-700/60">
+                        <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 block">Synthesized Santali Speech Audio</label>
+                        <div class="flex items-center gap-4 bg-slate-900/80 p-3 rounded-xl border border-slate-700">
+                            <audio id="audioPlayer" controls class="w-full h-10 rounded"></audio>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Latency & Performance Benchmark Card -->
+                <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-6 shadow-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                            <i class="fas fa-stopwatch text-amber-400"></i> Performance & Latency Benchmarks
+                        </h2>
+                        <span class="text-xs bg-amber-950/60 border border-amber-800/50 text-amber-300 font-semibold px-2 py-0.5 rounded">
+                            Target: &lt; 3000 ms
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div class="bg-slate-900/80 border border-slate-700 p-3 rounded-xl text-center">
+                            <span class="text-[11px] text-slate-400 block font-medium">1. ASR Time</span>
+                            <span id="asrMs" class="text-lg font-bold text-indigo-400">0 ms</span>
+                        </div>
+                        <div class="bg-slate-900/80 border border-slate-700 p-3 rounded-xl text-center">
+                            <span class="text-[11px] text-slate-400 block font-medium">2. NMT Time</span>
+                            <span id="transMs" class="text-lg font-bold text-purple-400">0 ms</span>
+                        </div>
+                        <div class="bg-slate-900/80 border border-slate-700 p-3 rounded-xl text-center">
+                            <span class="text-[11px] text-slate-400 block font-medium">3. TTS Time</span>
+                            <span id="ttsMs" class="text-lg font-bold text-emerald-400">0 ms</span>
+                        </div>
+                        <div class="bg-slate-900/80 border border-slate-700 p-3 rounded-xl text-center">
+                            <span class="text-[11px] text-slate-400 block font-medium">Total Pipeline</span>
+                            <span id="totalMs" class="text-lg font-bold text-amber-400">0 ms</span>
+                        </div>
+                    </div>
+
+                    <!-- System Resource Metrics -->
+                    <div class="mt-4 pt-3 border-t border-slate-700/60 flex flex-wrap items-center justify-between text-xs text-slate-400 gap-2">
+                        <div><strong class="text-slate-300">Process RAM:</strong> <span id="ramUsage">-- MB</span></div>
+                        <div><strong class="text-slate-300">GPU VRAM:</strong> <span id="gpuUsage">-- MB</span></div>
+                        <div><strong class="text-slate-300">Execution Hardware:</strong> <span id="hardwareMode" class="text-indigo-400">CUDA FP16</span></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-12 text-center text-xs text-slate-500 border-t border-slate-800 pt-6">
+            Smart India Hackathon Prototype — Vernacular Pedagogy Module ( Hindi ↔ Santali ) | Offline Classroom Inference Engine
+        </footer>
+    </div>
+
+    <!-- App JavaScript -->
+    <script src="/static/app.js"></script>
+</body>
+</html>
