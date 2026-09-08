@@ -20,8 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const ramUsage = document.getElementById('ramUsage');
     const gpuUsage = document.getElementById('gpuUsage');
 
-    // Dynamic API Base URL (supports direct origin or fallback to port 8000)
-    const API_BASE = (window.location.port === '8000' || !window.location.port) 
+    // Dynamic API Base URL (uses relative path on port 8000, else connects to http://localhost:8000)
+    const API_BASE = (window.location.port === '8000') 
         ? '' 
         : 'http://localhost:8000';
 
