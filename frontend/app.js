@@ -184,6 +184,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- Helper for safe JSON response parsing ---
+    async function safeResponseJSON(response) {
+        const text = await response.text();
+        let data = null;
+        try {
+            data = text ? JSON.parse(text) : null;
+        } catch (e) {
+            if (response.status >= 500) {
+                throw new Error(`Server status ${response.status}: The AI model is initializing or downloading in the background. Please wait 10-15 seconds and try again.`);
+            }
+            throw new Error(`Server returned unexpected response (status ${response.status}).`);
+        }
+
+        if (!response.ok) {
+            const msg = (data && data.detail) ? data.detail : `Server error (status ${response.status}).`;
+            throw new Error(msg);
+        }
+
+        if (!data) {
+            throw new Error('Received empty response payload from server.');
+        }
+        return data;
+    }
+
     // --- Process Audio Payload via Backend API ---
     async function processAudioPayload(blobOrFile, filename) {
         setLoadingState(true);
@@ -196,12 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: formData
             });
 
-            if (!response.ok) {
-                const errData = await response.json();
-                throw new Error(errData.detail || 'Audio translation pipeline failed.');
-            }
-
-            const data = await response.json();
+            const data = await safeResponseJSON(response);
             displayResults(data);
             recordStatus.textContent = 'Click to record Hindi speech';
         } catch (err) {
@@ -243,13 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
             });
 
-
-            if (!response.ok) {
-                const errData = await response.json();
-                throw new Error(errData.detail || 'Text translation failed.');
-            }
-
-            const data = await response.json();
+            const data = await safeResponseJSON(response);
             santaliOutput.innerHTML = `<span class="text-indigo-200 font-semibold">${data.translated_text}</span>`;
             transMs.textContent = `${data.translation_ms} ms`;
             totalMs.textContent = `${data.translation_ms} ms`;

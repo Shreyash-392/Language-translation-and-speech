@@ -54,6 +54,7 @@ class IndicTrans2Translation(TranslationProvider):
                 model_path,
                 trust_remote_code=True,
                 torch_dtype=dtype,
+                low_cpu_mem_usage=True,
                 token=token,
                 local_files_only=settings.OFFLINE_MODE,
                 cache_dir=settings.MODEL_DIR
@@ -76,6 +77,7 @@ class IndicTrans2Translation(TranslationProvider):
                     model_path,
                     trust_remote_code=True,
                     torch_dtype=dtype,
+                    low_cpu_mem_usage=True,
                     token=token,
                     local_files_only=False,
                     cache_dir=settings.MODEL_DIR
@@ -97,6 +99,7 @@ class IndicTrans2Translation(TranslationProvider):
                 model_path,
                 trust_remote_code=True,
                 torch_dtype=dtype,
+                low_cpu_mem_usage=True,
                 token=token,
                 local_files_only=True,
                 cache_dir=settings.MODEL_DIR
