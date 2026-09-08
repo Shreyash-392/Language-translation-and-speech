@@ -1,8 +1,15 @@
 import os
+import sys
 import asyncio
 import logging
 from pathlib import Path
 from contextlib import asynccontextmanager
+
+# Add parent 'backend' directory to sys.path programmatically
+backend_dir = Path(__file__).resolve().parent.parent
+if str(backend_dir) not in sys.path:
+    sys.path.insert(0, str(backend_dir))
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
