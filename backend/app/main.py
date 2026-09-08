@@ -21,20 +21,9 @@ from app.api.translation_speech import router as speech_router
 
 logger = logging.getLogger("uvicorn")
 
-def _warmup_models():
-    """Background model preloader to eliminate cold-start delay on first request."""
-    logger.info("Initializing background AI model warmup...")
-    try:
-        from app.translation_speech.translation.indictrans2 import IndicTrans2Translation
-        IndicTrans2Translation.get_instance().load_model()
-        logger.info("IndicTrans2 model preloaded successfully.")
-    except Exception as e:
-        logger.warning(f"Background warmup for IndicTrans2 deferred: {e}")
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Preload models asynchronously when FastAPI starts up
-    asyncio.create_task(asyncio.to_thread(_warmup_models))
+    # Lazy model loading on-demand to conserve RAM on cloud deployments
     yield
 
 app = FastAPI(

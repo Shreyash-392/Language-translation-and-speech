@@ -72,6 +72,13 @@ class VoiceTranslationPipeline:
         total_ms = total_timer.stop()
         metrics = get_system_metrics()
 
+        # Trigger garbage collection to release temporary audio/tensor memory buffers
+        try:
+            import gc
+            gc.collect()
+        except Exception:
+            pass
+
         return {
             "hindi_text": hindi_text,
             "santali_text": santali_text,
